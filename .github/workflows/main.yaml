@@ -18,7 +18,7 @@ jobs:
        - name: hello world
          run: echo "Hello world"
          shell: bash
-env:
+goodbye:
      runs-on: ubuntu-latest
      steps:
        - name: goodbye

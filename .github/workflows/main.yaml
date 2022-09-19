@@ -1,3 +1,4 @@
+
 # This is a basic workflow to help you get started with Actions
 name: Hello world workflow
 
@@ -19,8 +20,8 @@ jobs:
          run: echo "Hello world"
          shell: bash
    goodbye:
-         runs-on: ubuntu-latest
-         steps:
-           - name: goodbye
-             run: echo "goodbye"
-             shell: bash 
+     runs-on: ubuntu-latest
+     steps:
+       - name: goodbye
+         run: echo "goodbye"
+         shell: bash  

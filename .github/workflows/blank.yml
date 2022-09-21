@@ -21,12 +21,7 @@ jobs:
       run: 
         shell: bash
     steps: 
-    # checkout the repo to the github action runner
-    - name: checkout
-      uses: action/checkout@v2
-        
-
-    # Terraform CLI token 
+      # Terraform CLI token 
     - name: Setup Terraform 
       uses: hashicorp/setup-terraform@v1
       with: 

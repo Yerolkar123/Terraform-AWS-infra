@@ -30,20 +30,20 @@ jobs:
     # Terraform init   
     - name: Terraform init
       run: terraform init
-      working-directory: ./main/main.tf/environment/production
+      working-directory: ./main
 
 
     # Terraform fmt
     - name: Terraform format          
       run: terraform fmt -check
-      working-directory: ./main/main.tf/environment/production
+      working-directory: ./main
 
     # Terraform plan
     - name: Terraform Plan          
       run: terraform plan 
-      working-directory: ./main/main.tf/environment/production
+      working-directory: ./main
 
      # Terraform Apply
     - name: Terraform Apply         
-      if: github.ref == 'Yerolkar123/Repo-1/main/main.tf' && github.event_name == 'push'
+      if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'
       run: terraform apply -auto-approve 

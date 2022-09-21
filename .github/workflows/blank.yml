@@ -41,5 +41,5 @@ jobs:
 
      # Terraform Apply
     - name: Terraform Apply         
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'
       run: terraform apply -auto-approve 

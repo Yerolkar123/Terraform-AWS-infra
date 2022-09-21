@@ -30,6 +30,7 @@ jobs:
     # Terraform init   
     - name: Terraform init
       run: terraform init
+      working-directory: ./terraform/vpc/envirnment/prod
 
     # Terraform fmt
     - name: Terraform format          

@@ -12,7 +12,9 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Create a VPC
-resource "aws_vpc" "example" {
-  cidr_block = "10.0.0.0/16"
+module "aws_vpc" {
+  source             = "./modules/aws/vpc"
+  aws_region         = "us-east-1"
+  aws_vpc_cidr_block = "10.0.0.0/16"
+  aws_vpc_name       = "my-vpc"
 }

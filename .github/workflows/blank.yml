@@ -41,10 +41,10 @@ jobs:
     # Terraform plan
     - name: Terraform Plan          
       run: terraform plan 
-      path: Yerolkar123/Repo-1/main.tf
+      
  
 
      # Terraform Apply
     - name: Terraform Apply         
-      if: github.ref == 'Yerolkar123/Repo-1/main.tf' && github.event_name == 'push'
+      if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'
       run: terraform apply -auto-approve 

@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
-env: 
-  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}    
+    env: 
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}    
 
     #use the bash shell whether the github acition runner is ubuntu-latest, windows-latest
     defaults: 

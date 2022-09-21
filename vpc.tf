@@ -12,8 +12,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-module "aws_vpc" {
-  source             = "./modules/aws/vpc"
+resource "aws_vpc" "my-vpc"{
   aws_region         = "us-east-1"
   aws_vpc_cidr_block = "10.0.0.0/16"
   aws_vpc_name       = "my-vpc"

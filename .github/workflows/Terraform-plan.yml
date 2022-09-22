@@ -1,7 +1,9 @@
 name: "Terraform-plan-Infra-Release"
 
 on: 
-  push: 
+  push:
+    paths:
+      - './'
     branches: 
       - master
   pull_request: 

@@ -16,5 +16,5 @@ resource "aws_security_group" "aws_sg" {
         to_port   = 8080
         protocol  = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
-    }
+ }
 }

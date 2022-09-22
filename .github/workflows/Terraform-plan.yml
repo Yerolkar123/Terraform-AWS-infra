@@ -18,7 +18,7 @@ jobs:
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}
       GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      ROOT_PATH: '{{ github.workspace }}/Yerolkar123/Repo-1' 
+      ROOT_PATH: '/home/runner/work/Repo-1/Repo-1' 
 
     #use the bash shell whether the github acition runner is ubuntu-latest, windows-latest
     defaults: 
@@ -49,7 +49,7 @@ jobs:
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}
       GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      ROOT_PATH: '../' 
+      ROOT_PATH: '/home/runner/work/Repo-1/Repo-1' 
 
     #use the bash shell whether the github acition runner is ubuntu-latest, windows-latest
     defaults: 

@@ -35,14 +35,27 @@ jobs:
     # Terraform fmt
     - name: Terraform format          
       run: terraform fmt -check
+      
+    - name: Checkout 
+      uses: actions/checkout@v2
+      with: 
+         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      # Terraform plan
+    - name: Terraform init
+      id: init
+      run: terraform init
+
     - name: Terraform Plan
       id: plan
       if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'
-      run: terraform plan  
-      
+      run: terraform plan    
+
+    - name: Checkout 
+      uses: actions/checkout@v3
+      with: 
+         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }} 
+
       # Terraform Apply
     - name: Terraform Apply         
       if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'
-      run: terraform apply -auto-approve 
+      run: terraform apply -auto-approve      

@@ -40,7 +40,12 @@ jobs:
       uses: actions/checkout@v3
       with: 
          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }} 
-
+     
+    - name: Terraform Plan
+      id: plan
+      if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'
+      run: terraform plan
+      
       # Terraform Apply
     - name: Terraform Apply         
       if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'

@@ -10,7 +10,7 @@ on:
 
 jobs: 
   terraform-init: 
-    name: "Terraform-int"
+    name: "terraform-int"
     runs-on: ubuntu-latest
     environment: production
 
@@ -37,7 +37,8 @@ jobs:
       working-directory: ${{ env.ROOT_PATH }}
 
   terraform-plan: 
-    name: "Terraform-plan"
+    needs: "terraform-init"
+    name: "terraform-plan"
     runs-on: ubuntu-latest
     environment: production
 

@@ -30,7 +30,12 @@ jobs:
     - name: Terraform init
       id: init
       run: terraform init
-
+ 
+    - name: Checkout 
+      uses: actions/checkout@v2
+      with: 
+         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+ 
     - name: Terraform Plan
       id: plan
       if: github.ref == 'Yerolkar123/Repo-1/main.tf' && github.event_name == 'push'

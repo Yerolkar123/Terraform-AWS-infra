@@ -31,20 +31,17 @@ jobs:
     - name: Terraform init
       run: terraform init
  
-
-
     # Terraform fmt
     - name: Terraform format          
       run: terraform fmt -check
 
-
-    # Terraform plan
-    - name: Terraform Plan          
-      run: terraform plan 
+      # Terraform plan
+    - name: Terraform Plan
+      id: plan
+      if: github.event_name == 'push'
+      run: terraform plan -no-colour 
       
- 
-
-     # Terraform Apply
+      # Terraform Apply
     - name: Terraform Apply         
       if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'
       run: terraform apply -auto-approve 

@@ -1,0 +1,38 @@
+name: "Terraform-plan-Infra-Release"
+
+on: 
+  push: 
+    branches: 
+      - master
+  pull_request: 
+
+jobs: 
+  terraform: 
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    environment: production
+
+    env: 
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}
+      GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}    
+
+    #use the bash shell whether the github acition runner is ubuntu-latest, windows-latest
+    defaults: 
+      run: 
+        shell: bash
+    steps: 
+      # Terraform CLI token 
+    - name: Setup Terraform 
+      uses: hashicorp/setup-terraform@v1
+      with: 
+         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+         
+    - name: Terraform init
+      id: init
+      run: terraform init - input=false
+
+    - name: Terraform Plan
+      id: plan
+      if: github.ref == 'Yerolkar123/Repo-1/main.tf' && github.event_name == 'push'
+      run: terraform plan 

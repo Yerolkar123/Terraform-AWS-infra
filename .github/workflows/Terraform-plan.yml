@@ -25,6 +25,9 @@ jobs:
       run: 
         shell: bash
     steps: 
+    - name: Checkout
+      uses: actions/checkout@v2
+         
       # Terraform CLI token 
     - name: Setup Terraform 
       uses: hashicorp/setup-terraform@v1

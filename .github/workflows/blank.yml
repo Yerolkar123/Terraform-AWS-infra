@@ -21,14 +21,14 @@ jobs:
       run: 
         shell: bash
     steps: 
-    - name: Checkout 
-      uses: actions/checkout@v2
-      
       # Terraform CLI token 
     - name: Setup Terraform 
       uses: hashicorp/setup-terraform@v1
       with: 
-         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }} 
+         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+         
+    - name: Checkout 
+      uses: actions/checkout@v2   
 
     # Terraform init   
     - name: Terraform init
@@ -42,7 +42,7 @@ jobs:
       # Terraform plan
     - name: Terraform Plan
       id: plan
-      if: github.event_name == 'push'
+      if: github.ref == 'Yerolkar123/Repo-1' && github.event_name == 'push'
       run: terraform plan  
       
       # Terraform Apply

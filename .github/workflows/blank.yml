@@ -27,10 +27,7 @@ jobs:
       with: 
          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
          
-    - name: Checkout 
-      uses: actions/checkout@v2   
-
-    # Terraform init   
+      # Terraform init   
     - name: Terraform init
       id: init
       run: terraform init

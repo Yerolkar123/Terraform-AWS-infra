@@ -33,7 +33,7 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      if: github.ref == 'Yerolkar123/Repo-1/main' && github.event_name == 'push'
+      if: github.ref == 'Yerolkar123/Repo-1/main.tf' && github.event_name == 'push'
       run: terraform plan    
 
     - name: Checkout 
@@ -43,5 +43,5 @@ jobs:
    
       # Terraform Apply
     - name: Terraform Apply         
-      if: github.ref == 'Yerolkar123/Repo-1/main' && github.event_name == 'push'
+      if: github.ref == 'Yerolkar123/Repo-1/main.tf' && github.event_name == 'push'
       run: terraform apply -auto-approve      

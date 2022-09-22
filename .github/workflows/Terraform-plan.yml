@@ -30,7 +30,7 @@ jobs:
          
     - name: Terraform init
       id: init
-      run: terraform init - input=false
+      run: terraform init 
 
     - name: Terraform Plan
       id: plan

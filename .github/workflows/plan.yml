@@ -8,7 +8,7 @@ on:
 env: 
   AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }} 
   AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY_ID }}
-  ROOT_PATH: '${{ github.workspace }}/Terraform'  
+  ROOT_PATH: '${{ github.workspace }}/main.tf'  
 
 permissions:
   contents: read

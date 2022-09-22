@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-terraform { 
+terraform "registry.terraform.io/hashicorp/aws" { 
   
   required_version = ">= 0.15"
   

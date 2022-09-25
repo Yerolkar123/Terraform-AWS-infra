@@ -139,6 +139,7 @@ resource "aws_instance" "web-server1" {
   tags = { 
     Name = "Public-instance1"  
 } 
+}  
 resource "aws_instance" "web-server2" {
   ami           = "${var.image_id}"
   instance_type = "${var.instance_type}"

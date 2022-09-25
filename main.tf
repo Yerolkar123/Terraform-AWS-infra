@@ -66,15 +66,14 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.Private_route
 } 
 resource "aws_eip" "nat_eip" {
-  vpc = "true" 
-  count = "1" 
+  vpc = "true"  
   depends_on = [aws_internet_gateway.demo_igw] 
   tags = {
     Name = "nat_gateway_eip" 
   }
 } 
 resource "aws_nat_gateway" "demo_nat" {
-  allocation_id =  aws_eip.nat_eip[count.index].id
+  allocation_id =  aws_eip.nat_eip.id
   subnet_id = aws_subnet.Public_subnet.id
   
   tags = {
@@ -129,8 +128,7 @@ resource "aws_autoscaling_group" "Demo-asg-tf" {
 resource "aws_instance" "web-server" {
   ami           = "${var.image_id}"
   instance_type = "${var.instance_type}"
-  region        = "${var.region}"
-  security_group = data.aws_security_group.allow_tls.name 
+  security_groups = data.aws_security_group.allow_tls.name 
   count         = 2 
   vpc_id         =  aws_vpc.demo_vpc.id 
   subnet_id      =  aws_subnet.Public_subnet.id
@@ -143,8 +141,7 @@ resource "aws_instance" "web-server" {
 resource "aws_instance" "DB_server" {
   ami            = "${var.image_id}"
   instance_type  = "${var.instance_type}"
-  region         = "${var.region}"
-  security_group = data.aws_security_group.allow_tls.name
+  security_groups = data.aws_security_group.allow_tls.name
   vpc_id         =  aws_vpc.demo_vpc.id 
   subnet_id      =  aws_subnet.Private_subnet
   count          =  1

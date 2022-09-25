@@ -117,7 +117,6 @@ resource "aws_instance" "web-server" {
   instance_type = "${var.instance_type}"
   security_groups = aws_security_group.allow_tls.name 
   count         = 2 
-  vpc_id         =  aws_vpc.demo_vpc.id 
   subnet_id      =  aws_subnet.Public_subnet.id
   associate_public_ip_address =  true
 
@@ -129,7 +128,6 @@ resource "aws_instance" "DB_server" {
   ami            = "${var.image_id}"
   instance_type  = "${var.instance_type}"
   security_groups = aws_security_group.allow_tls.name
-  vpc_id         =  aws_vpc.demo_vpc.id 
   subnet_id      =  aws_subnet.Private_subnet
   count          =  1
   associate_public_ip_address =  false

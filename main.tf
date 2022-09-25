@@ -7,7 +7,7 @@ resource "aws_vpc" "demo_vpc" {
 resource "aws_subnet" "Public_subnet" {
   vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${ var.Public_cidr_block }" 
-  map_public_ip_on_lunch = "true" 
+  map_public_ip_on_launch = "true" 
   availability_zone = data.aws_availability_zones.az.names[0]
     
   tags = {
@@ -18,7 +18,7 @@ resource "aws_subnet" "Public_subnet" {
 resource "aws_subnet" "Private_subnet" {
   vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${var.Private_cidr_block}" 
-  map_public_ip_on_lunch = "false" 
+  map_public_ip_on_launch = "false" 
   availability_zone = data.aws_availability_zones.az.names[0]
     
   tags = {

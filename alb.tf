@@ -19,9 +19,9 @@ resource "aws_lb_target_group" "target_group" {
 resource "aws_lb" "application_lb" { 
     name          = "whiz-alb"
     internal      = false 
-    ip_aip_address_type =  "ipv4" 
+    ip_address_type =  "ipv4" 
     load_balancer_type = "application" 
-    security_group = [aws_security_group.allow_tls.id]  
+    security_groups = [aws_security_group.allow_tls.id]  
     subnets = [aws_subnet.Public_subnet.id] 
 
     tags = {

@@ -21,7 +21,7 @@ resource "aws_lb" "application_lb" {
     internal      = false 
     ip_address_type =  "ipv4" 
     load_balancer_type = "application" 
-    security_groups = [aws_security_group.allow_tls.id]  
+    security_groups = ["${aws_security_group.allow_tls.id}"]  
     subnets = [aws_subnet.Public_subnet.id] 
 
     tags = {
@@ -41,7 +41,7 @@ resource "aws_lb_listener" "front_end" {
 
 resource "aws_lb_target_group_attachment" "ec2_attach" {
   target_group_arn = aws_lb_target_group.target_group.arn
-  target_id        = aws_instance.web-server
+  target_id        = aws_instance.web-server.id
   count            = length(aws_instance.web-server)
 }
 

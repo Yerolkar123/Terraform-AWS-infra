@@ -9,14 +9,14 @@ variable "instance_type" {
     default = "t2.micro"
 }
 variable "vpc_cidr" {
-    default = "10.0.0.0/16"
+    default = "172.31.0.0/20"
 }
 variable "Public_subA_cidr_block" {
-    default = "10.0.0.0/24" 
+    default = "172.31.32.0/20" 
 }
 variable "Public_subB_cidr_block" {
-    default = "10.0.2.0/24" 
+    default = "10.31.16.1/20" 
 }
 variable "Private_cidr_block" {
-    default = 	"10.0.1.0/24"
+    default = 	"172.31.32.10/20"
 }

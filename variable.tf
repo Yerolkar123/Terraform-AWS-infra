@@ -18,5 +18,5 @@ variable "Public_subB_cidr_block" {
     default = "172.31.16.0/20" 
 }
 variable "Private_cidr_block" {
-    default = 	"172.31.12.0/20"
+    default = 	"172.31.4.0/20"
 }

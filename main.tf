@@ -59,11 +59,11 @@ resource "aws_route_table" "Private_route" {
 } 
 resource "aws_route_table_association" "public" {
   subnet_id = aws_subnet.Public_subnet.id 
-  route_table_id = aws_route_table.Public_route
+  route_table_id = aws_route_table.Public_route.id
 } 
 resource "aws_route_table_association" "private" {
   subnet_id = aws_subnet.Private_subnet.id 
-  route_table_id = aws_route_table.Private_route
+  route_table_id = aws_route_table.Private_route.id
 } 
 resource "aws_eip" "nat_eip" {
   vpc = "true"  
@@ -115,7 +115,7 @@ resource "aws_security_group" "allow_tls" {
 resource "aws_instance" "web-server" {
   ami           = "${var.image_id}"
   instance_type = "${var.instance_type}"
-  security_groups = aws_security_group.allow_tls 
+  security_groups = aws_security_group.allow_tls.id 
   count         = 2 
   subnet_id      =  aws_subnet.Public_subnet.id
   associate_public_ip_address =  true
@@ -127,7 +127,7 @@ resource "aws_instance" "web-server" {
 resource "aws_instance" "DB_server" {
   ami            = "${var.image_id}"
   instance_type  = "${var.instance_type}"
-  security_groups = aws_security_group.allow_tls
+  security_groups = aws_security_group.allow_tls.id
   subnet_id      =  aws_subnet.Private_subnet
   count          =  1
   associate_public_ip_address =  false

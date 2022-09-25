@@ -1,6 +1,5 @@
 resource "aws_vpc" "demo_vpc" {
   cidr_block = "${var.vpc_cidr}"
-  enable_nat_gateway = true
   tags = {
     Name = "demo_vpc" 
   } 

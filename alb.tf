@@ -1,163 +1,112 @@
-
-data "aws_availability_zones" "az" {
-
-state = "available"
-
+resource "aws_lb_target_group" "target_group" { 
+    health_check {
+        interval            = 10
+        path                = "/" 
+        protocol            ="HTTP" 
+        timeout             = 5
+        healthy_threshold   = 5
+        unhealthy_threshold = 2 
+} 
+    name          = "whiz-tg" 
+    port          =  80
+    protocol      = "HTTP" 
+    target_type   = "instance" 
+    vpc_id        = "${aws_vpc.demo_vpc.id}"
+    depends_on = [aws_vpc.demo_vpc]  
 }
-resource "aws_vpc" "demo_vpc" {
-  cidr_block = "${var.vpc_cidr}"
-  enable_nat_gateway = true
-  tags = {
-    Name = "demo_vpc" 
+
+#creating ALB 
+resource "aws_lb" "application_lb" { 
+    name          = "whiz-alb"
+    internal      = false 
+    ip_aip_address_type =  "ipv4" 
+    load_balancer_type = "application" 
+    security_group = [aws_security_group.allow_tls.id]  
+    subnets = [aws_subnet.Public_subnet.id] 
+
+    tags = {
+        Name = "whiz-alb"
+    }
+} 
+
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.application_lb.arn
+  port              = "80"
+  protocol          = "HTTP" 
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn
   } 
+} 
+
+resource "aws_lb_target_group_attachment" "ec2_attach" {
+  target_group_arn = aws_lb_target_group.target-group.arn
+  target_id        = aws_instance.web-server
+  count            = length(aws_instance.web-server)
 }
-resource "aws_subnet" "Public_subnet" {
-  vpc_id = aws_vpc.demo_vpc.id 
-  cidr_block = "${ var.Public_cidr_block }" 
-  map_public_ip_on_lunch = "true" 
-  availability_zone = data.aws_availability_zones.az.names[0]
-    
-  tags = {
-    Name = "Public_subnet" 
+
+/*module "network_load_balancer" {
+  source  = "infrablocks/network-load-balancer/aws"
+  version = "0.1.7"
+
+  region = "eu-west-2"
+  vpc_id = "vpc-fb7dc365"
+  subnet_ids = "subnet-ae4533c4,subnet-443e6b12"
+
+  component = "important-component"
+  deployment_identifier = "production"
+
+  domain_name = "example.com"
+  public_zone_id = "Z1WA3EVJBXSQ2V"
+  private_zone_id = "Z3CVA9QD5NHSW3"
+
+  listeners = [
+    {
+      lb_port = 443
+      lb_protocol = "HTTPS"
+      instance_port = 443
+      instance_protocol = "HTTPS"
+      ssl_certificate_id = "arn:aws:iam::123456789012:server-certificate/default"
+    },
+    {
+      lb_port = 6567
+      lb_protocol = "TCP"
+      instance_port = 6567
+      instance_protocol = "TCP"
     }
-  } 
+  ]
 
-resource "aws_subnet" "Private_subnet" {
-  vpc_id = aws_vpc.demo_vpc.id 
-  cidr_block = "${var.Private_cidr_block}" 
-  map_public_ip_on_lunch = "false" 
-  availability_zone = data.aws_availability_zones.az.names[0]
-    
-  tags = {
-    Name = "Private_subnet" 
+  access_control = [
+    {
+      lb_port = 443
+      instance_port = 443
+      allow_cidr = "0.0.0.0/0"
+    },
+    {
+      lb_port = 6567
+      instance_port = 6567
+      allow_cidr = "10.0.0.0/8"
     }
-  }
-resource "aws_internet_gateway" "demo_igw" { 
-  vpc_id = aws_vpc.demo_vpc.id 
-  
-  tags = {
-    Name = "Demo_igw"
-  }
-  
-} 
-resource "aws_route_table" "Public_route" { 
-  vpc_id = aws_vpc.demo_vpc.id 
+  ]
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.demo_igw.id
-  }
-  
-  tags = {
-    Name = "public" 
-  }
-} 
-resource "aws_route_table" "Private_route" { 
-  vpc_id = aws_vpc.demo_vpc.id 
+  egress_cidrs = "10.0.0.0/8"
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id =  aws_nat_gateway.demo_nat.id
-  }
-  
-  tags = {
-    Name = "private" 
-  }
-} 
-resource "aws_route_table_association" "public" {
-  subnet_id = aws_subnet.Public_subnet.id 
-  route_table_id = aws_route_table.Public_route
-} 
-resource "aws_route_table_association" "private" {
-  subnet_id = aws_subnet.Private_subnet.id 
-  route_table_id = aws_route_table.Private_route
-} 
-resource "aws_eip" "nat_eip" {
-  vpc = "true" 
-  count = "1" 
-  depends_on = [aws_internet_gateway.demo_igw] 
-  tags = {
-    Name = "nat_gateway_eip" 
-  }
-} 
-resource "aws_nat_gateway" "demo_nat" {
-  allocation_id =  aws_eip.nat_eip[count.index].id
-  subnet_id = aws_subnet.Public_subnet.id
-  
-  tags = {
-    Name = "nat_gateway_eip" 
-  }
-} 
+  health_check_target = "HTTPS:443/ping"
+  health_check_timeout = 10
+  health_check_interval = 30
+  health_check_unhealthy_threshold = 5
+  health_check_healthy_threshold = 5
 
-resource "aws_security_group" "allow_tls" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.demo_vpc.id
+  enable_cross_zone_load_balancing = "yes"
 
-  ingress {
-    description      = "TLS from VPC"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    }
-  ingress {
-    description      = "TLS from VPC"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+  enable_connection_draining = "yes"
+  connection_draining_timeout = 60
 
-  tags = {
-    Name = "allow_tls"
-  }
+  idle_timeout = 60
+
+  include_public_dns_record = "yes"
+  include_private_dns_record = "yes"
+
+  expose_to_public_internet = "yes"
 }
-
-resource "aws_autoscaling_group" "Demo-asg-tf" {
-  name             = "Demo-asg-tf"
-  desired_capacity = 1
-  max_size         = 2
-  min_size         = 1
-  force_delete     = true
-  depends_on       = [aws_lb.application_lb]
-  target_group_arns = "${aws_lb_target_group.target_group.arn}" 
-  health_check_type = "EC2"
-  vpc_zone_identifier = ["${aws_subnet.Private_subnet.id}"]    
-  
-}
-
-resource "aws_instance" "web-server" {
-  ami           = "${var.image_id}"
-  instance_type = "${var.instance_type}"
-  region        = "${var.region}"
-  security_group = data.aws_security_group.allow_tls.name 
-  count         = 2 
-  vpc_id         =  aws_vpc.demo_vpc.id 
-  subnet_id      =  aws_subnet.Public_subnet.id
-  associate_public_ip_address =  true
-
-  tags = { 
-    Name = "Public-instance"  
-}   
-} 
-resource "aws_instance" "DB_server" {
-  ami            = "${var.image_id}"
-  instance_type  = "${var.instance_type}"
-  region         = "${var.region}"
-  security_group = data.aws_security_group.allow_tls.name
-  vpc_id         =  aws_vpc.demo_vpc.id 
-  subnet_id      =  aws_subnet.Private_subnet
-  count          =  1
-  associate_public_ip_address =  false
-
-  tags = {
-    Name = "private-instance"
-  }
-}
+*/

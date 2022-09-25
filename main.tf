@@ -31,7 +31,7 @@ resource "aws_subnet" "Private_subnet" {
   vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${var.Private_cidr_block}" 
   map_public_ip_on_launch = "false" 
-  availability_zone = data.aws_availability_zones.az.names[0]
+  availability_zone = data.aws_availability_zones.azA.names[0]
     
   tags = {
     Name = "Private_subnet" 

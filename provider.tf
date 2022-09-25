@@ -14,7 +14,12 @@ terraform {
   }
 }
 
-data "aws_availability_zones" "az" {
+data "aws_availability_zones" "azA" {
+
+state = "available"
+
+}
+data "aws_availability_zones" "azB" {
 
 state = "available"
 

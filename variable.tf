@@ -1,4 +1,4 @@
-variable "region" {
+variable "region"  {
     description = "my_region"
     default = "us-east-1"
 }

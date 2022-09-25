@@ -12,7 +12,7 @@ resource "aws_lb_target_group" "target_group" {
     protocol      = "HTTP" 
     target_type   = "instance" 
     vpc_id        = "${aws_vpc.demo_vpc.id}"
-    depends_on = ["aws_vpc.demo_vpc"]  
+    depends_on = [aws_vpc.demo_vpc]  
 }
 
 #creating ALB 
@@ -40,7 +40,7 @@ resource "aws_lb_listener" "front_end" {
 } 
 
 resource "aws_lb_target_group_attachment" "ec2_attach" {
-  target_group_arn = aws_lb_target_group.target-group.arn
+  target_group_arn = aws_lb_target_group.target_group.arn
   target_id        = aws_instance.web-server
   count            = length(aws_instance.web-server)
 }

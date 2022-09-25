@@ -115,7 +115,7 @@ resource "aws_security_group" "allow_tls" {
 resource "aws_instance" "web-server" {
   ami           = "${var.image_id}"
   instance_type = "${var.instance_type}"
-  security_groups = aws_security_group.allow_tls.name 
+  security_groups = aws_security_group.allow_tls 
   count         = 2 
   subnet_id      =  aws_subnet.Public_subnet.id
   associate_public_ip_address =  true
@@ -127,7 +127,7 @@ resource "aws_instance" "web-server" {
 resource "aws_instance" "DB_server" {
   ami            = "${var.image_id}"
   instance_type  = "${var.instance_type}"
-  security_groups = aws_security_group.allow_tls.name
+  security_groups = aws_security_group.allow_tls
   subnet_id      =  aws_subnet.Private_subnet
   count          =  1
   associate_public_ip_address =  false

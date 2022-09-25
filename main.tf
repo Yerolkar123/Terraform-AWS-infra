@@ -1,13 +1,4 @@
 
-resource "aws_key_pair" "keyfile" {
-    
-  key_name   = "keyfile"
-  public_key = file("keyfile.pub")
-  tags       = {
-  Name = "keyfile"
-  }
-}
-
 data "aws_availability_zones" "az" {
 
 state = "available"
@@ -23,7 +14,7 @@ resource "aws_vpc" "demo_vpc" {
 }
 resource "aws_subnet_ids" "Public_subnet" {
   vpc_id = aws_vpc.demo_vpc.id 
-  cidr_block = "${ var.Public_cidr }" 
+  cidr_block = "${ var.Public_cidr_block }" 
   map_public_ip_on_lunch = "true" 
   availability_zone = data.aws_availability_zones.az.names[0]
     
@@ -34,7 +25,7 @@ resource "aws_subnet_ids" "Public_subnet" {
 
 resource "aws_subnet_ids" "Private_subnet" {
   vpc_id = aws_vpc.demo_vpc.id 
-  cidr_block = "${var.Private_cidr}" 
+  cidr_block = "${var.Private_cidr_block}" 
   map_public_ip_on_lunch = "false" 
   availability_zone = data.aws_availability_zones.az.names[0]
     
@@ -55,7 +46,7 @@ resource "aws_route_table" "Public_route" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.demo_igw 
+    gateway_id = aws_internet_gateway.demo_igw.id
   }
   
   tags = {
@@ -67,7 +58,7 @@ resource "aws_route_table" "Private_route" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id =  aws_nat_gateway.demo_nat
+    gateway_id =  aws_nat_gateway.demo_nat.id
   }
   
   tags = {
@@ -83,15 +74,16 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.Private_route
 } 
 resource "aws_eip" "nat_eip" {
-  vpc = "true"  
+  vpc = "true" 
+  count = "1" 
   depends_on = [aws_internet_gateway.demo_igw] 
   tags = {
     Name = "nat_gateway_eip" 
   }
 } 
 resource "aws_nat_gateway" "demo_nat" {
-  allocation_id =  aws_eip.nat_eip
-  subnet_id = aws_subnet_ids.Public_subnet
+  allocation_id =  aws_eip.nat_eip[count.index].id
+  subnet_id = aws_subnet_ids.Public_subnet.id
   
   tags = {
     Name = "nat_gateway_eip" 
@@ -101,21 +93,21 @@ resource "aws_nat_gateway" "demo_nat" {
 resource "aws_security_group" "allow_tls" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id      = data.aws_vpc.demo_vpc.id
+  vpc_id      = aws_vpc.demo_vpc.id
 
   ingress {
     description      = "TLS from VPC"
     from_port        = 443
     to_port          = 443
     protocol         = "tcp"
-    cidr_blocks      = [aws_default_vpc.main.cidr_blocks]
+    cidr_blocks      = ["0.0.0.0/0"]
     }
   ingress {
     description      = "TLS from VPC"
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
-    cidr_blocks      = [aws_default_vpc.main.cidr_blocks]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
   egress {
     from_port        = 0
@@ -129,15 +121,27 @@ resource "aws_security_group" "allow_tls" {
   }
 }
 
+resource "aws_autoscaling_group" "Demo-asg-tf" {
+  name             = "Demo-asg-tf"
+  desired_capacity = 1
+  max_size         = 2
+  min_size         = 1
+  force_delete     = true
+  depends_on       = ["aws_lb.application_lb"]
+  target_group_arns = "${aws_lb_target_group.target_group.arn}" 
+  health_check_type = "EC2"
+  vpc_zone_identifier = ["${aws_subnet_ids.Private_subnet.id}"]    
+  
+}
+
 resource "aws_instance" "web-server" {
   ami           = "${var.image_id}"
-  instance_type = "${var.machine_type}"
+  instance_type = "${var.instance_type}"
   region        = "${var.region}"
-  security_group = data.aws_security_group.allow_tls.name
-  key_name      = "${var.key_name}"
+  security_group = data.aws_security_group.allow_tls.name 
   count         = 2 
-  vpc_id         =  data.aws_vpc.demo_vpc.id 
-  subnet_id      =  data.aws_subnet_ids.Public_subnet
+  vpc_id         =  aws_vpc.demo_vpc.id 
+  subnet_id      =  aws_subnet_ids.Public_subnet.id
   associate_public_ip_address =  true
 
   tags = { 
@@ -146,12 +150,11 @@ resource "aws_instance" "web-server" {
 } 
 resource "aws_instance" "DB_server" {
   ami            = "${var.image_id}"
-  instance_type  = "${var.machine_type}"
+  instance_type  = "${var.instance_type}"
   region         = "${var.region}"
   security_group = data.aws_security_group.allow_tls.name
-  key_name       = "${var.key_name}"
-  vpc_id         =  data.aws_vpc.demo_vpc.id 
-  subnet_id      =  data.aws_subnet_ids.Private_subnet
+  vpc_id         =  aws_vpc.demo_vpc.id 
+  subnet_id      =  aws_subnet_ids.Private_subnet
   count          =  1
   associate_public_ip_address =  false
 

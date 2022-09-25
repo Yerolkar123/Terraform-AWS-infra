@@ -4,16 +4,28 @@ resource "aws_vpc" "demo_vpc" {
     Name = "demo_vpc" 
   } 
 }
-resource "aws_subnet" "Public_subnet" {
+resource "aws_subnet" "Public_subnetA" {
   vpc_id = aws_vpc.demo_vpc.id 
-  cidr_block = "${ var.Public_cidr_block }" 
+  cidr_block = "${ var.Public_subA_cidr_block }" 
   map_public_ip_on_launch = "true" 
   availability_zone = data.aws_availability_zones.az.names[0]
     
   tags = {
-    Name = "Public_subnet" 
+    Name = "Public_subnet1" 
     }
   } 
+
+resource "aws_subnet" "Public_subnetB" {
+  vpc_id = aws_vpc.demo_vpc.id 
+  cidr_block = "${ var.Public_subB_cidr_block }" 
+  map_public_ip_on_launch = "true" 
+  availability_zone = data.aws_availability_zones.az.names[0]
+    
+  tags = {
+    Name = "Public_subnet2" 
+    }
+  } 
+
 
 resource "aws_subnet" "Private_subnet" {
   vpc_id = aws_vpc.demo_vpc.id 
@@ -57,8 +69,12 @@ resource "aws_route_table" "Private_route" {
     Name = "private" 
   }
 } 
-resource "aws_route_table_association" "public" {
-  subnet_id = aws_subnet.Public_subnet.id 
+resource "aws_route_table_association" "publicA" {
+  subnet_id = aws_subnet.Public_subnetA.id 
+  route_table_id = aws_route_table.Public_route.id
+} 
+resource "aws_route_table_association" "publicB" {
+  subnet_id = aws_subnet.Public_subnetB.id 
   route_table_id = aws_route_table.Public_route.id
 } 
 resource "aws_route_table_association" "private" {
@@ -74,7 +90,7 @@ resource "aws_eip" "nat_eip" {
 } 
 resource "aws_nat_gateway" "demo_nat" {
   allocation_id =  aws_eip.nat_eip.id
-  subnet_id = aws_subnet.Public_subnet.id
+  subnet_id = aws_subnet.Public_subnetA.id
   
   tags = {
     Name = "nat_gateway_eip" 
@@ -112,17 +128,28 @@ resource "aws_security_group" "allow_tls" {
   }
 }
 
-resource "aws_instance" "web-server" {
+resource "aws_instance" "web-server1" {
   ami           = "${var.image_id}"
   instance_type = "${var.instance_type}"
   security_groups = ["${aws_security_group.allow_tls.id}"] 
-  count         = 2 
-  subnet_id      =  aws_subnet.Public_subnet.id
+  count         = 1 
+  subnet_id      =  aws_subnet.Public_subnetA.id
   associate_public_ip_address =  true
 
   tags = { 
-    Name = "Public-instance"  
-}   
+    Name = "Public-instance1"  
+} 
+resource "aws_instance" "web-server2" {
+  ami           = "${var.image_id}"
+  instance_type = "${var.instance_type}"
+  security_groups = ["${aws_security_group.allow_tls.id}"] 
+  count         = 1 
+  subnet_id      =  aws_subnet.Public_subnetB.id
+  associate_public_ip_address =  true
+
+  tags = { 
+    Name = "Public-instance2"  
+}     
 } 
 resource "aws_instance" "DB_server" {
   ami            = "${var.image_id}"

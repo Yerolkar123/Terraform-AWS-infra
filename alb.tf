@@ -7,7 +7,7 @@ resource "aws_lb_target_group" "target_group" {
         healthy_threshold   = 5
         unhealthy_threshold = 2 
 } 
-    name          = "whiz-tg" 
+    name          = "first-demo-tg" 
     port          =  80
     protocol      = "HTTP" 
     target_type   = "instance" 
@@ -22,7 +22,7 @@ resource "aws_lb" "application_lb" {
     ip_address_type =  "ipv4" 
     load_balancer_type = "application" 
     security_groups = ["${aws_security_group.allow_tls.id}"]  
-    subnets = [aws_subnet.Public_subnet.id] 
+    subnets = [aws_subnet.Public_subnetA.id, aws_subnet.Public_subnetB.id] 
 
     tags = {
         Name = "whiz-alb"
@@ -39,11 +39,17 @@ resource "aws_lb_listener" "front_end" {
   } 
 } 
 
-resource "aws_lb_target_group_attachment" "ec2_attach" {
+resource "aws_lb_target_group_attachment" "web1_attach" {
   target_group_arn = aws_lb_target_group.target_group.arn
-  target_id        =  aws_instance.web-server[count.index].id
-  count            = length(aws_instance.web-server)
+  target_id        =  aws_instance.web-server1[count.index].id
+  count            = length(aws_instance.web-server1)
 }
+resource "aws_lb_target_group_attachment" "web2_attach" {
+  target_group_arn = aws_lb_target_group.target_group.arn
+  target_id        =  aws_instance.web-server2[count.index].id
+  count            = length(aws_instance.web-server2)
+}
+
 
 /*module "network_load_balancer" {
   source  = "infrablocks/network-load-balancer/aws"

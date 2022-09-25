@@ -1,12 +1,17 @@
+
+data "aws_availability_zones" "az" {
+
+state = "available"
+
+}
 resource "aws_vpc" "demo_vpc" {
-  vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${var.vpc_cidr}"
   enable_nat_gateway = true
   tags = {
     Name = "demo_vpc" 
   } 
 }
-resource "aws_subnet_ids" "Public_subnet" {
+resource "aws_subnet" "Public_subnet" {
   vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${ var.Public_cidr_block }" 
   map_public_ip_on_lunch = "true" 
@@ -17,7 +22,7 @@ resource "aws_subnet_ids" "Public_subnet" {
     }
   } 
 
-resource "aws_subnet_ids" "Private_subnet" {
+resource "aws_subnet" "Private_subnet" {
   vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${var.Private_cidr_block}" 
   map_public_ip_on_lunch = "false" 
@@ -60,11 +65,11 @@ resource "aws_route_table" "Private_route" {
   }
 } 
 resource "aws_route_table_association" "public" {
-  subnet_id = aws_subnet_ids.Public_subnet.id 
+  subnet_id = aws_subnet.Public_subnet.id 
   route_table_id = aws_route_table.Public_route
 } 
 resource "aws_route_table_association" "private" {
-  subnet_id = aws_subnet_ids.Private_subnet.id 
+  subnet_id = aws_subnet.Private_subnet.id 
   route_table_id = aws_route_table.Private_route
 } 
 resource "aws_eip" "nat_eip" {
@@ -77,7 +82,7 @@ resource "aws_eip" "nat_eip" {
 } 
 resource "aws_nat_gateway" "demo_nat" {
   allocation_id =  aws_eip.nat_eip[count.index].id
-  subnet_id = aws_subnet_ids.Public_subnet.id
+  subnet_id = aws_subnet.Public_subnet.id
   
   tags = {
     Name = "nat_gateway_eip" 
@@ -121,10 +126,10 @@ resource "aws_autoscaling_group" "Demo-asg-tf" {
   max_size         = 2
   min_size         = 1
   force_delete     = true
-  depends_on       = ["aws_lb.application_lb"]
+  depends_on       = [aws_lb.application_lb]
   target_group_arns = "${aws_lb_target_group.target_group.arn}" 
   health_check_type = "EC2"
-  vpc_zone_identifier = ["${aws_subnet_ids.Private_subnet.id}"]    
+  vpc_zone_identifier = ["${aws_subnet.Private_subnet.id}"]    
   
 }
 
@@ -135,7 +140,7 @@ resource "aws_instance" "web-server" {
   security_group = data.aws_security_group.allow_tls.name 
   count         = 2 
   vpc_id         =  aws_vpc.demo_vpc.id 
-  subnet_id      =  aws_subnet_ids.Public_subnet.id
+  subnet_id      =  aws_subnet.Public_subnet.id
   associate_public_ip_address =  true
 
   tags = { 
@@ -148,7 +153,7 @@ resource "aws_instance" "DB_server" {
   region         = "${var.region}"
   security_group = data.aws_security_group.allow_tls.name
   vpc_id         =  aws_vpc.demo_vpc.id 
-  subnet_id      =  aws_subnet_ids.Private_subnet
+  subnet_id      =  aws_subnet.Private_subnet
   count          =  1
   associate_public_ip_address =  false
 

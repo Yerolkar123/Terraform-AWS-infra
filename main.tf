@@ -112,23 +112,10 @@ resource "aws_security_group" "allow_tls" {
   }
 }
 
-resource "aws_autoscaling_group" "Demo-asg-tf" {
-  name             = "Demo-asg-tf"
-  desired_capacity = 1
-  max_size         = 2
-  min_size         = 1
-  force_delete     = true
-  depends_on       = [aws_lb.application_lb]
-  target_group_arns = "${aws_lb_target_group.target_group.arn}" 
-  health_check_type = "EC2"
-  vpc_zone_identifier = ["${aws_subnet.Private_subnet.id}"]    
-  
-}
-
 resource "aws_instance" "web-server" {
   ami           = "${var.image_id}"
   instance_type = "${var.instance_type}"
-  security_groups = data.aws_security_group.allow_tls.name 
+  security_groups = aws_security_group.allow_tls.name 
   count         = 2 
   vpc_id         =  aws_vpc.demo_vpc.id 
   subnet_id      =  aws_subnet.Public_subnet.id
@@ -141,7 +128,7 @@ resource "aws_instance" "web-server" {
 resource "aws_instance" "DB_server" {
   ami            = "${var.image_id}"
   instance_type  = "${var.instance_type}"
-  security_groups = data.aws_security_group.allow_tls.name
+  security_groups = aws_security_group.allow_tls.name
   vpc_id         =  aws_vpc.demo_vpc.id 
   subnet_id      =  aws_subnet.Private_subnet
   count          =  1

@@ -1,9 +1,3 @@
-
-data "aws_availability_zones" "az" {
-
-state = "available"
-
-}
 resource "aws_vpc" "demo_vpc" {
   vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${var.vpc_cidr}"

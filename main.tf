@@ -8,7 +8,7 @@ resource "aws_subnet" "Public_subnetA" {
   vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${ var.Public_subA_cidr_block }" 
   map_public_ip_on_launch = "true" 
-  availability_zone = data.aws_availability_zones.az.names[0]
+  availability_zone = data.aws_availability_zones.azA.names[0]
     
   tags = {
     Name = "Public_subnet1" 
@@ -19,7 +19,7 @@ resource "aws_subnet" "Public_subnetB" {
   vpc_id = aws_vpc.demo_vpc.id 
   cidr_block = "${ var.Public_subB_cidr_block }" 
   map_public_ip_on_launch = "true" 
-  availability_zone = data.aws_availability_zones.az.names[0]
+  availability_zone = data.aws_availability_zones.azB.names[0]
     
   tags = {
     Name = "Public_subnet2" 

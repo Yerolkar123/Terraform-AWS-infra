@@ -1,0 +1,32 @@
+# Kubernetes Index
+
+> Architecture of kubernetes
+ -components Master and slave 
+
+>Network policies
+
+>Kubernetes storage(Volumes)
+
+>Nodes, Pods, Containers & Cluster
+
+>Objects of the kubernetes
+ - Pods, containers
+ - Deployment, resources, limit
+ - Emptydir, persistant volume
+ - services( Load balancer, cluster IP, Nodeport)
+ - Kubernetes Daemon, statefull & stateless
+ - Namespaces,label, selectors
+ - configmap & secrets
+ - replicaset, replication controller
+ - Ingress controller
+ - Kubernetes autoscaling 
+
+>Minikube installation
+
+>D.Namespaces
+
+>Kubeadm, kubeinit, kubelet & kubeproxy
+
+> Helm charts. 
+
+>Kubernetes command. 
